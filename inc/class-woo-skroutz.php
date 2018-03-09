@@ -30,7 +30,39 @@ class Woo_Skroutz {
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
 		add_action( 'save_post', array( $this, 'save_post' ) );
-		add_action( 'init', array( $this, 'print_xml' ) );
+		add_action( 'init', array( $this, 'print_xml' ), 20 );
+		add_action( 'init', array( $this, 'add_skroutz_cats_taxonomy' ), 5 );
+	}
+
+	/**
+	 * Add a skroutz_categories taxonomy to products.
+	 *
+	 * @since 1.0
+	 * @access public
+	 * @return void
+	 */
+	public function add_skroutz_cats_taxonomy() {
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => array(
+				'name'              => 'Κατηγορίες Skroutz',
+				'singular_name'     => 'Κατηγορία Skroutz',
+				'search_items'      => 'Αναζήτηση',
+				'all_items'         => 'Όλες οι κατηγορίες',
+				'parent_item'       => 'Γονική Κατηγορία',
+				'parent_item_colon' => 'Γονική Κατηγορία:',
+				'edit_item'         => 'Επεξεργασία Κατηγορίας',
+				'update_item'       => 'Ενημέρωση Κατηγορίας',
+				'add_new_item'      => 'Προσθήκη Κατηγορίας',
+				'new_item_name'     => 'Όνομα Νέας Κατηγορίας',
+				'menu_name'         => 'Κατηγορία Skroutz',
+			),
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			// 'rewrite'           => array( 'slug' => 'skroutz-category' ),
+		);
+		register_taxonomy( 'skroutz_category', array( 'product' ), $args );
 	}
 
 	/**
@@ -85,6 +117,52 @@ class Woo_Skroutz {
 	}
 
 	/**
+	 * Gets an array of categories we need.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @return array
+	 */
+	protected function get_categories() {
+		return array(
+			'453' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ακουστικές Κιθάρες',
+			'457' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Κλασικές Κιθάρες',
+			'454' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ηλεκτρικές Κιθάρες',
+			'459' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ηλεκτρικά Μπάσα',
+			'475' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Αρμόνια & Keyboards',
+			'456' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Πιάνα',
+			'460' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Μπουζούκια',
+			'477' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Διάφορα Μουσικά Όργανα',
+			'461' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Τουμπελέκια',
+			'783' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Κρουστά',
+			'455' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Σετ Ντράμς',
+			'463' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Βιολιά & Βιολοντσέλα',
+			'476' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Κλαρινέτα',
+			'464' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Μπαγλαμάδες',
+			'480' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ντραμς',
+			'474' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Λύρες',
+			'462' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Φλογέρες',
+			'468' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Τζουράδες',
+			'458' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ακορντεόν',
+			'471' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Τρομπέτες',
+			'465' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Μαντολίνα',
+			'466' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Σαξόφωνα',
+			'473' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Λαούτα',
+			'479' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Φλάουτα',
+			'478' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ντέφι',
+			'470' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ταμπουράδες',
+			'469' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Ούτι',
+			'467' => 'Hobby - Αθλητισμός > Μουσικά Όργανα > Τρομπόνια',
+			'553' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Μπαγκέτες',
+			'554' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Θήκες Μουσικών Οργάνων',
+			'559' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Βάσεις & Αναλόγια',
+			'557' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Διάφορα Εγχόρδων',
+			'550' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Χορδές',
+			'551' => 'Hobby - Αθλητισμός > Αξεσουάρ Μουσικών Οργάνων > Μαγνήτες',
+		);
+	}
+
+	/**
 	 * The metabox HTML.
 	 *
 	 * @access public
@@ -94,10 +172,7 @@ class Woo_Skroutz {
 	 */
 	public function html( $post ) {
 		wp_nonce_field( '_skroutz_nonce', 'skroutz_nonce' );
-		$categories = array(
-			'cat1' => 'Category 1',
-			'cat2' => 'Category 2',
-		);
+		$categories     = $this->get_categories();
 		$availabilities = array(
 			''          => 'Αυτόματο',
 			'immediate' => 'Άμεση παραλαβή / Παράδoση 1 έως 3 ημέρες',
