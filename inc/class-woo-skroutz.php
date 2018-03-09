@@ -1,7 +1,26 @@
 <?php
+/**
+ * The main plugin class.
+ *
+ * @since 1.0
+ * @package woo-skroutz
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( class_exists( 'Woo_Skroutz' ) ) {
+	return;
+}
+
+/**
+ * The main plugin class.
+ *
+ * @since 1.0
+ */
 class Woo_Skroutz {
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -13,7 +32,7 @@ class Woo_Skroutz {
 		add_action( 'save_post', array( $this, 'save_post' ) );
 		add_action( 'init', array( $this, 'print_xml' ) );
 	}
-	
+
 	/**
 	 * Prints the XML.
 	 *
@@ -24,29 +43,29 @@ class Woo_Skroutz {
 	public function print_xml() {
 		if ( isset( $_GET['skroutz-xml'] ) && 'get.xml' === $_GET['skroutz-xml'] ) {
 			header( 'Content-type: text/xml' );
-			echo $this->get_xml();
+			echo $this->get_xml(); // WPCS: XSS ok.
 			exit();
 		}
 	}
 
 	/**
 	 * Get meta.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0
-	 * @param $name The meta-name.
+	 * @param string $name The meta-name.
 	 * @return mixed The post-meta value.
 	 */
-	public function get_meta( $value ) {
+	public function get_meta( $name ) {
 		global $post;
 
-		$field = get_post_meta( $post->ID, $value, true );
+		$field = get_post_meta( $post->ID, $name, true );
 		if ( ! empty( $field ) ) {
 			return is_array( $field ) ? stripslashes_deep( $field ) : stripslashes( wp_kses_decode_entities( $field ) );
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Add the metabox.
 	 *
@@ -54,7 +73,7 @@ class Woo_Skroutz {
 	 * @since 1.0
 	 * @return void
 	 */
-	function add_meta_box() {
+	public function add_meta_box() {
 		add_meta_box(
 			'skroutz-skroutz',
 			__( 'Skroutz', 'skroutz' ),
@@ -64,16 +83,16 @@ class Woo_Skroutz {
 			'high'
 		);
 	}
-	
+
 	/**
 	 * The metabox HTML.
 	 *
 	 * @access public
 	 * @since 1.0
-	 * @param WP_Post The WP_Post object.
+	 * @param WP_Post $post The WP_Post object.
 	 * @return void
 	 */
-	function html( $post) {
+	public function html( $post ) {
 		wp_nonce_field( '_skroutz_nonce', 'skroutz_nonce' );
 		$categories = array(
 			'cat1' => 'Category 1',
@@ -88,32 +107,32 @@ class Woo_Skroutz {
 		);
 		?>
 
-		<p><?php esc_attr_e( 'Skroutz Product Details', 'skroutz' ); ?></p>
+		<p>Λεπτομέρειες προϊόντος Skroutz</p>
 		<p>
 			<input type="checkbox" name="skroutz_add_to_skroutz" id="skroutz_add_to_skroutz" value="add-to-skroutz" <?php echo ( $this->get_meta( 'skroutz_add_to_skroutz' ) === 'add-to-skroutz' ) ? 'checked' : ''; ?>>
-			<label for="skroutz_add_to_skroutz"><?php _e( 'Add to skroutz', 'skroutz' ); ?></label>
+			<label for="skroutz_add_to_skroutz">Προσθήκη σε skroutz</label>
 		</p>
 		<p>
-			<label for="skroutz_category"><?php _e( 'Category', 'skroutz' ); ?></label><br>
+			<label for="skroutz_category">Κατηγορία Skroutz</label><br>
 			<select name="skroutz_category" id="skroutz_category">
 				<?php foreach ( $categories as $slug => $label ) : ?>
-					<option <?php echo ( $slug === $this->get_meta( 'skroutz_category' ) ) ? 'selected' : '' ?>><?php echo esc_html( $label ); ?></option>
+					<option <?php echo ( $slug === $this->get_meta( 'skroutz_category' ) ) ? 'selected' : ''; ?>><?php echo esc_html( $label ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>
-			<label for="skroutz_shipping_cost"><?php _e( 'Shipping Cost', 'skroutz' ); ?></label><br>
-			<input type="number" min="0" max="100" step="0.1" name="skroutz_shipping_cost" id="skroutz_shipping_cost" value="<?php echo $this->get_meta( 'skroutz_shipping_cost' ); ?>">
+			<label for="skroutz_shipping_cost">Έξοδα αποστολής</label><br>
+			<input type="number" min="0" max="100" step="0.1" name="skroutz_shipping_cost" id="skroutz_shipping_cost" value="<?php echo $this->get_meta( 'skroutz_shipping_cost' ); // WPCS: XSS ok. ?>">
 		</p>
 		<p>
-			<label for="skroutz_description"><?php _e( 'Description', 'skroutz' ); ?></label><br>
-			<textarea name="skroutz_description" id="skroutz_description" ><?php echo $this->get_meta( 'skroutz_description' ); ?></textarea>
+			<label for="skroutz_description">Περιγραφή</label><br>
+			<textarea name="skroutz_description" id="skroutz_description" ><?php echo $this->get_meta( 'skroutz_description' ); // WPCS: XSS ok. ?></textarea>
 		</p>
 		<p>
-			<label for="skroutz_availability"><?php _e( 'availability', 'skroutz' ); ?></label><br>
+			<label for="skroutz_availability">Διαθεσιμότητα</label><br>
 			<select name="skroutz_availability" id="skroutz_availability">
 				<?php foreach ( $availabilities as $key => $val ) : ?>
-					<option <?php echo ( $key === $this->get_meta( 'skroutz_availability' ) ) ? 'selected' : '' ?>><?php echo $val; // WPCS: CSS ok. ?></option>
+					<option <?php echo ( $key === $this->get_meta( 'skroutz_availability' ) ) ? 'selected' : ''; ?>><?php echo $val; // WPCS: XSS ok. ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
@@ -128,11 +147,11 @@ class Woo_Skroutz {
 	 * @param int $post_id The psot-ID.
 	 * @return void
 	 */
-	function save_post( $post_id ) {
+	public function save_post( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
-		if ( ! isset( $_POST['skroutz_nonce'] ) || ! wp_verify_nonce( $_POST['skroutz_nonce'], '_skroutz_nonce' ) ) {
+		if ( ! isset( $_POST['skroutz_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['skroutz_nonce'] ) ), '_skroutz_nonce' ) ) {
 			return;
 		}
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
@@ -144,7 +163,7 @@ class Woo_Skroutz {
 		} else {
 			update_post_meta( $post_id, 'skroutz_add_to_skroutz', null );
 		}
-		
+
 		if ( isset( $_POST['skroutz_category'] ) ) {
 			update_post_meta( $post_id, 'skroutz_category', sanitize_text_field( wp_unslash( $_POST['skroutz_category'] ) ) );
 		}
@@ -158,7 +177,7 @@ class Woo_Skroutz {
 			update_post_meta( $post_id, 'skroutz_availability', sanitize_text_field( wp_unslash( $_POST['skroutz_availability'] ) ) );
 		}
 	}
-	
+
 	/**
 	 * Gets the products.
 	 *
@@ -175,7 +194,7 @@ class Woo_Skroutz {
 		);
 		$posts_results = get_posts( $args );
 		wp_reset_postdata();
-		
+
 		$posts = array();
 		foreach ( $posts_results as $post_result ) {
 			$posts[] = array(
@@ -185,7 +204,7 @@ class Woo_Skroutz {
 		}
 		return $posts;
 	}
-	
+
 	/**
 	 * Generate the XML.
 	 *

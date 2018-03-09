@@ -11,4 +11,7 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress"/>
+	<rule ref="WordPress.VIP.PostsPerPage.posts_per_page_posts_per_page">
+		<exclude-pattern>inc/class-woo-skroutz.php</exclude-pattern>
+	</rule>
 </ruleset>

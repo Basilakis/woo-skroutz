@@ -1,5 +1,10 @@
 <?php
 /**
+ * A plugin to handle skroutz.gr XML generation on a per-product basis.
+ *
+ * @since 1.0
+ * @package woo-skroutz
+ *
  * Plugin Name: Woo Skroutz
  * Plugin URI: https://wpmu.io
  * Description: Add Skroutz.gr XML generation per-product.
@@ -12,6 +17,10 @@
  * Version: 1.0
  * Text Domain: skroutz
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 include_once dirname( __FILE__ ) . '/inc/class-woo-skroutz.php';
 new Woo_Skroutz();
