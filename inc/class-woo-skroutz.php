@@ -28,8 +28,6 @@ class Woo_Skroutz {
 	 * @since 1.0
 	 */
 	public function __construct() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-		add_action( 'save_post', array( $this, 'save_post' ) );
 		add_action( 'init', array( $this, 'print_xml' ), 20 );
 		add_action( 'init', array( $this, 'add_skroutz_cats_taxonomy' ), 5 );
 	}
@@ -115,110 +113,6 @@ class Woo_Skroutz {
 			return is_array( $field ) ? stripslashes_deep( $field ) : stripslashes( wp_kses_decode_entities( $field ) );
 		}
 		return false;
-	}
-
-	/**
-	 * Add the metabox.
-	 *
-	 * @access public
-	 * @since 1.0
-	 * @return void
-	 */
-	public function add_meta_box() {
-		add_meta_box(
-			'skroutz-skroutz',
-			__( 'Skroutz', 'skroutz' ),
-			array( $this, 'html' ),
-			'product',
-			'side',
-			'high'
-		);
-	}
-
-	/**
-	 * The metabox HTML.
-	 *
-	 * @access public
-	 * @since 1.0
-	 * @param WP_Post $post The WP_Post object.
-	 * @return void
-	 */
-	public function html( $post ) {
-		wp_nonce_field( '_skroutz_nonce', 'skroutz_nonce' );
-		$categories     = array();
-		$availabilities = array(
-			''          => 'Αυτόματο',
-		);
-		?>
-		<input type="checkbox" name="skroutz_add_to_skroutz" id="skroutz_add_to_skroutz" value="add-to-skroutz" <?php echo ( $this->get_meta( 'skroutz_add_to_skroutz' ) === 'add-to-skroutz' ) ? 'checked' : ''; ?>>
-		<label for="skroutz_add_to_skroutz">Προσθήκη σε skroutz</label>
-		<hr>
-
-		<h4><label for="skroutz_category">Κατηγορία Skroutz</label></h4>
-		<p>Επιλέξτε την κατηγορία στην οποία το προϊόν θα πρέπει να καταχωρηθεί στο skroutz.</p>
-		<select name="skroutz_category" id="skroutz_category">
-			<?php foreach ( $categories as $slug => $label ) : ?>
-				<option <?php echo ( $slug === $this->get_meta( 'skroutz_category' ) ) ? 'selected' : ''; ?>><?php echo esc_html( $label ); ?></option>
-			<?php endforeach; ?>
-		</select>
-		<hr>
-
-		<h4><label for="skroutz_shipping_cost">Έξοδα αποστολής</label></h4>
-		<p>Αφήστε το κενό για αυτόματο.</p>
-		<input type="number" min="0" max="100" step="0.1" name="skroutz_shipping_cost" id="skroutz_shipping_cost" value="<?php echo $this->get_meta( 'skroutz_shipping_cost' ); // WPCS: XSS ok. ?>">
-		<hr>
-
-		<h4><label for="skroutz_description">Περιγραφή</label></h4>
-		<p>Αφήστε το κενό για αυτόματο.</p>
-		<textarea name="skroutz_description" id="skroutz_description" style="width:100%;"><?php echo $this->get_meta( 'skroutz_description' ); // WPCS: XSS ok. ?></textarea>
-		<hr>
-
-		<h4><label for="skroutz_availability">Διαθεσιμότητα</label></h4>
-		<select name="skroutz_availability" id="skroutz_availability">
-			<?php foreach ( $availabilities as $key => $val ) : ?>
-				<option <?php echo ( $key === $this->get_meta( 'skroutz_availability' ) ) ? 'selected' : ''; ?>><?php echo $val; // WPCS: XSS ok. ?></option>
-			<?php endforeach; ?>
-		</select>
-		<?php
-	}
-
-	/**
-	 * Save the post-meta.
-	 *
-	 * @access public
-	 * @since 1.0
-	 * @param int $post_id The psot-ID.
-	 * @return void
-	 */
-	public function save_post( $post_id ) {
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return;
-		}
-		if ( ! isset( $_POST['skroutz_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['skroutz_nonce'] ) ), '_skroutz_nonce' ) ) {
-			return;
-		}
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
-		}
-
-		if ( isset( $_POST['skroutz_add_to_skroutz'] ) ) {
-			update_post_meta( $post_id, 'skroutz_add_to_skroutz', sanitize_text_field( wp_unslash( $_POST['skroutz_add_to_skroutz'] ) ) );
-		} else {
-			update_post_meta( $post_id, 'skroutz_add_to_skroutz', null );
-		}
-
-		if ( isset( $_POST['skroutz_category'] ) ) {
-			update_post_meta( $post_id, 'skroutz_category', sanitize_text_field( wp_unslash( $_POST['skroutz_category'] ) ) );
-		}
-		if ( isset( $_POST['skroutz_shipping_cost'] ) ) {
-			update_post_meta( $post_id, 'skroutz_shipping_cost', sanitize_text_field( wp_unslash( $_POST['skroutz_shipping_cost'] ) ) );
-		}
-		if ( isset( $_POST['skroutz_description'] ) ) {
-			update_post_meta( $post_id, 'skroutz_description', sanitize_text_field( wp_unslash( $_POST['skroutz_description'] ) ) );
-		}
-		if ( isset( $_POST['skroutz_availability'] ) ) {
-			update_post_meta( $post_id, 'skroutz_availability', sanitize_text_field( wp_unslash( $_POST['skroutz_availability'] ) ) );
-		}
 	}
 
 	/**
