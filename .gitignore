@@ -1,0 +1,10 @@
+/admin/.DS_Store
+.DS_Store
+/node_modules/
+/.idea/
+/log.txt
+npm-debug.log
+
+package-lock.json
+composer.lock
+vendor/*
