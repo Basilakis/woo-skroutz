@@ -12,3 +12,6 @@
  * Version: 1.0
  * Text Domain: skroutz
  */
+
+include_once dirname( __FILE__ ) . '/inc/class-woo-skroutz.php';
+new Woo_Skroutz();
