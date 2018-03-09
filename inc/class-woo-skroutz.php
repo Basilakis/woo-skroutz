@@ -106,36 +106,35 @@ class Woo_Skroutz {
 			'orderonly' => 'Κατόπιν Παραγγελίας',
 		);
 		?>
+		<input type="checkbox" name="skroutz_add_to_skroutz" id="skroutz_add_to_skroutz" value="add-to-skroutz" <?php echo ( $this->get_meta( 'skroutz_add_to_skroutz' ) === 'add-to-skroutz' ) ? 'checked' : ''; ?>>
+		<label for="skroutz_add_to_skroutz">Προσθήκη σε skroutz</label>
+		<hr>
 
-		<p>Λεπτομέρειες προϊόντος Skroutz</p>
-		<p>
-			<input type="checkbox" name="skroutz_add_to_skroutz" id="skroutz_add_to_skroutz" value="add-to-skroutz" <?php echo ( $this->get_meta( 'skroutz_add_to_skroutz' ) === 'add-to-skroutz' ) ? 'checked' : ''; ?>>
-			<label for="skroutz_add_to_skroutz">Προσθήκη σε skroutz</label>
-		</p>
-		<p>
-			<label for="skroutz_category">Κατηγορία Skroutz</label><br>
-			<select name="skroutz_category" id="skroutz_category">
-				<?php foreach ( $categories as $slug => $label ) : ?>
-					<option <?php echo ( $slug === $this->get_meta( 'skroutz_category' ) ) ? 'selected' : ''; ?>><?php echo esc_html( $label ); ?></option>
-				<?php endforeach; ?>
-			</select>
-		</p>
-		<p>
-			<label for="skroutz_shipping_cost">Έξοδα αποστολής</label><br>
-			<input type="number" min="0" max="100" step="0.1" name="skroutz_shipping_cost" id="skroutz_shipping_cost" value="<?php echo $this->get_meta( 'skroutz_shipping_cost' ); // WPCS: XSS ok. ?>">
-		</p>
-		<p>
-			<label for="skroutz_description">Περιγραφή</label><br>
-			<textarea name="skroutz_description" id="skroutz_description" ><?php echo $this->get_meta( 'skroutz_description' ); // WPCS: XSS ok. ?></textarea>
-		</p>
-		<p>
-			<label for="skroutz_availability">Διαθεσιμότητα</label><br>
-			<select name="skroutz_availability" id="skroutz_availability">
-				<?php foreach ( $availabilities as $key => $val ) : ?>
-					<option <?php echo ( $key === $this->get_meta( 'skroutz_availability' ) ) ? 'selected' : ''; ?>><?php echo $val; // WPCS: XSS ok. ?></option>
-				<?php endforeach; ?>
-			</select>
-		</p>
+		<h4><label for="skroutz_category">Κατηγορία Skroutz</label></h4>
+		<p>Επιλέξτε την κατηγορία στην οποία το προϊόν θα πρέπει να καταχωρηθεί στο skroutz.</p>
+		<select name="skroutz_category" id="skroutz_category">
+			<?php foreach ( $categories as $slug => $label ) : ?>
+				<option <?php echo ( $slug === $this->get_meta( 'skroutz_category' ) ) ? 'selected' : ''; ?>><?php echo esc_html( $label ); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<hr>
+
+		<h4><label for="skroutz_shipping_cost">Έξοδα αποστολής</label></h4>
+		<p>Αφήστε το κενό για αυτόματο.</p>
+		<input type="number" min="0" max="100" step="0.1" name="skroutz_shipping_cost" id="skroutz_shipping_cost" value="<?php echo $this->get_meta( 'skroutz_shipping_cost' ); // WPCS: XSS ok. ?>">
+		<hr>
+
+		<h4><label for="skroutz_description">Περιγραφή</label></h4>
+		<p>Αφήστε το κενό για αυτόματο.</p>
+		<textarea name="skroutz_description" id="skroutz_description" style="width:100%;"><?php echo $this->get_meta( 'skroutz_description' ); // WPCS: XSS ok. ?></textarea>
+		<hr>
+
+		<h4><label for="skroutz_availability">Διαθεσιμότητα</label></h4>
+		<select name="skroutz_availability" id="skroutz_availability">
+			<?php foreach ( $availabilities as $key => $val ) : ?>
+				<option <?php echo ( $key === $this->get_meta( 'skroutz_availability' ) ) ? 'selected' : ''; ?>><?php echo $val; // WPCS: XSS ok. ?></option>
+			<?php endforeach; ?>
+		</select>
 		<?php
 	}
 
