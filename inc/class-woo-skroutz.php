@@ -63,6 +63,25 @@ class Woo_Skroutz {
 			// 'rewrite'           => array( 'slug' => 'skroutz-category' ),
 		);
 		register_taxonomy( 'skroutz_category', array( 'product' ), $args );
+
+		$args = array(
+			'hierarchical'      => false,
+			'labels'            => array(
+				'name'              => 'Κατασκευαστής (Skroutz)',
+				'singular_name'     => 'Κατασκευαστής (Skroutz)',
+				'search_items'      => 'Αναζήτηση',
+				'all_items'         => 'Όλοι οι κατασκευαστές',
+				'edit_item'         => 'Επεξεργασία Κατασκευαστή',
+				'update_item'       => 'Ενημέρωση Κατασκευαστή',
+				'add_new_item'      => 'Προσθήκη Κατασκευαστή',
+				'new_item_name'     => 'Όνομα Νέου Κατασκευαστή',
+				'menu_name'         => 'Κατασκευαστής (Skroutz)',
+			),
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+		);
+		register_taxonomy( 'skroutz_manufacturer', array( 'product' ), $args );
 	}
 
 	/**
@@ -129,10 +148,6 @@ class Woo_Skroutz {
 		$categories     = array();
 		$availabilities = array(
 			''          => 'Αυτόματο',
-			'immediate' => 'Άμεση παραλαβή / Παράδoση 1 έως 3 ημέρες',
-			'1to3'      => 'Παράδοση σε 1 - 3 ημέρες',
-			'4to10'     => 'Παράδοση σε 4 - 10 ημέρες',
-			'orderonly' => 'Κατόπιν Παραγγελίας',
 		);
 		?>
 		<input type="checkbox" name="skroutz_add_to_skroutz" id="skroutz_add_to_skroutz" value="add-to-skroutz" <?php echo ( $this->get_meta( 'skroutz_add_to_skroutz' ) === 'add-to-skroutz' ) ? 'checked' : ''; ?>>
