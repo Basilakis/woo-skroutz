@@ -74,24 +74,116 @@ add_action( 'init', function() {
 
 	$products = get_posts( array(
 		'posts_per_page' => -1,
-		'meta_key'       => 'skroutz_add_to_skroutz',
-		'meta_value'     => 'add-to-skroutz',
+		'meta_key'       => 'skroutz_add',
+		'meta_value'     => '1',
 		'post_type'      => 'product',
 	) );
 	wp_reset_postdata();
 
 	header( 'Content-type: text/xml' );
-	?>
-	<?xml version="1.0" encoding="UTF-8"?>
+	echo '<?xml version="1.0" encoding="UTF-8"?>
 	<webstore>
-		<created_at><?php echo date( 'Y-m-d H:i' ); // WPCS: XSS ok. ?></created_at>
-		<products>
-			<?php foreach ( $products as $product ) : ?>
-				<product>
-				</product>
-			<?php endforeach; ?>
-		</products>
-	</webstore>
-	<?php
+	<created_at>' . date( 'Y-m-d H:i' ) . '</created_at>
+	<products>'; // WPCS: XSS ok.
+
+	foreach ( $products as $product ) {
+
+		// Skip if no image.
+		if ( ! has_post_thumbnail( $product ) ) {
+			continue;
+		}
+
+		if ( ! wc_get_product( $product->ID )->get_stock_quantity() ) {
+			continue;
+		}
+		echo '
+		<product>';
+
+			echo '
+			<uid>' . absint( $product->ID ) . '</uid>';
+			echo '
+			<name>' . the_title_attribute( array( 'echo' => false, 'post' => $product ) ) . '</name>';
+			echo '
+			<priceVat>' . number_format( wc_get_product( $product->ID )->get_price(), 2 ) . '</priceVat>';
+			echo '
+			<link>' . esc_url_raw( site_url( '?post_type=product&amp;p=' . $product->ID ) ) . '</link>';
+			echo '
+			<image>' . esc_url_raw( get_the_post_thumbnail_url( $product, 'full' ) ) . '</image>';
+
+			$cat_tree   = array();
+			// Level 1
+			$term       = get_field( 'skroutz_category', $product->ID );
+			$cat_tree[] = $term->term_id;
+			// Level 2
+			if ( $term->parent ) {
+				$term       = get_term( $term->parent, 'skroutz_category' );
+				$cat_tree[] = $term->term_id;
+			}
+			// Level 3
+			if ( $term->parent ) {
+				$term       = get_term( $term->parent, 'skroutz_category' );
+				$cat_tree[] = $term->term_id;
+			}
+			// Level 4
+			if ( $term->parent ) {
+				$term       = get_term( $term->parent, 'skroutz_category' );
+				$cat_tree[] = $term->term_id;
+			}
+			// Level 5
+			if ( $term->parent ) {
+				$term       = get_term( $term->parent, 'skroutz_category' );
+				$cat_tree[] = $term->term_id;
+			}
+			foreach ( $cat_tree as $key => $value ) {
+				if ( ! $value ) {
+					unset( $cat_tree[ $key ] );
+				}
+				$cat_tree[ $key ] = get_term( $value, 'skroutz_category' )->name;
+			}
+			krsort( $cat_tree );
+			echo '
+			<category>' . wp_strip_all_tags( implode( ' > ', $cat_tree ) ) . '</category>';
+
+			$manufacturer = get_field( 'skroutz_manufacturer' , $product->ID );
+			$manufacturer = ( $manufacturer ) ? $manufacturer->name : '';
+			echo '
+			<manufacturer>' . $manufacturer . '</manufacturer>';
+			echo '
+			<mpn>' . get_field( 'skroutz_mpn', $product->ID ) . '</mpn>';
+			echo '
+			<instock>Y</instock>';
+			echo '
+			<availability>' . get_field( 'skroutz_availability', $product->ID ) . '</availability>';
+			echo '
+			<shipping>' . number_format( get_field( 'skroutz_shipping_cost', $product->ID ), 2 ) . '</shipping>';
+			echo '
+			<color>' . wp_strip_all_tags( get_field( 'skroutz_color', $product->ID ) ) . '</color>';
+			echo '
+			<size>' . wp_strip_all_tags( get_field( 'skroutz_size', $product->ID ) ) . '</size>';
+
+			echo '
+		</product>';
+	}
+	echo '
+	</products>
+</webstore>';
 	exit();
 } );
+
+add_filter( 'manage_product_posts_columns', function( $columns ) {
+	unset( $columns['author'] );
+	$columns['skroutz'] = 'Skroutz';
+	return $columns;
+} );
+
+add_action( 'manage_product_posts_custom_column', function( $column, $post_id ) {
+
+	if ( 'skroutz' !== $column ) {
+		return;
+	}
+	$val = get_post_meta( $post_id, 'skroutz_add', true );
+	if ( ! $val ) {
+		return;
+	}
+	echo '<span class="dashicons dashicons-yes"></span>';
+}, 10, 2 );
