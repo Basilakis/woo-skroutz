@@ -187,3 +187,45 @@ add_action( 'manage_product_posts_custom_column', function( $column, $post_id ) 
 	}
 	echo '<span class="dashicons dashicons-yes"></span>';
 }, 10, 2 );
+
+add_filter( 'woocommerce_package_rates', function( $rates, $package ) {
+
+	// Get cart products.
+	$products = WC()->cart->get_cart_contents();
+
+	// Get the product IDs.
+	$product_ids = array();
+	if ( $products && is_array( $products ) ) {
+		foreach ( $products as $product ) {
+			$product_ids[] = $product['product_id'];
+		}
+	}
+
+	// Get an array of the shipping costs for all products.
+	$products_shipping_costs = array();
+	foreach ( $product_ids as $id ) {
+		$products_shipping_costs[] = (float) get_field( 'skroutz_shipping_cost', $id );
+	}
+
+	// Get the maximum shipping cost.
+	$max_shipping_cost = false;
+	$sum_shipping_cost = false;
+	if ( is_array( $products_shipping_costs ) ) {
+		$max_shipping_cost = max( $products_shipping_costs );
+		$sum_shipping_cost = array_sum( $products_shipping_costs );
+	}
+
+	foreach ( $rates as $key => $rate ) {
+		if ( false !== strpos( $key, 'flat_rate' ) ) {
+			$rate->cost = $sum_shipping_cost;
+			if ( $max_shipping_cost < 10 ) {
+				$rate->cost = $max_shipping_cost;
+			}
+			if ( $rate->cost >= 20 ) {
+				$rate->cost = $rate->cost / 2;
+			}
+		}
+	}
+
+	return $rates;
+}, 10, 2 );
